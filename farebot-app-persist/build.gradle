@@ -2,6 +2,8 @@ apply plugin: 'com.android.library'
 apply plugin: 'com.squareup.sqldelight'
 
 dependencies {
+    api libs.supportSqlite
+
     implementation libs.supportV4
     implementation libs.guava
     implementation libs.gson

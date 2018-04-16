@@ -22,6 +22,8 @@
 
 package com.codebutler.farebot.app.core.app
 
+import android.arch.persistence.db.SupportSQLiteOpenHelper
+import android.arch.persistence.db.framework.FrameworkSQLiteOpenHelperFactory
 import android.content.SharedPreferences
 import android.preference.PreferenceManager
 import com.codebutler.farebot.app.core.nfc.TagReaderFactory
@@ -47,7 +49,7 @@ import com.codebutler.farebot.persist.CardKeysPersister
 import com.codebutler.farebot.persist.CardPersister
 import com.codebutler.farebot.persist.db.DbCardKeysPersister
 import com.codebutler.farebot.persist.db.DbCardPersister
-import com.codebutler.farebot.persist.db.FareBotOpenHelper
+import com.codebutler.farebot.persist.db.FareBotDbCallback
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import dagger.Module
@@ -82,13 +84,34 @@ class FareBotApplicationModule {
     fun provideCardKeysSerializer(gson: Gson): CardKeysSerializer = GsonCardKeysSerializer(gson)
 
     @Provides
-    fun provideFareBotOpenHelper(application: FareBotApplication): FareBotOpenHelper = FareBotOpenHelper(application)
+    fun provideFareBotDbCallback(): FareBotDbCallback = FareBotDbCallback()
 
     @Provides
-    fun provideCardPersister(openHelper: FareBotOpenHelper): CardPersister = DbCardPersister(openHelper)
+    fun provideFareBotOpenHelperConfig(application: FareBotApplication,
+        dbCallback: FareBotDbCallback): SupportSQLiteOpenHelper.Configuration {
+        return SupportSQLiteOpenHelper.Configuration.builder(application)
+            .name(dbCallback.databaseName)
+            .callback(dbCallback)
+            .build()
+    }
 
     @Provides
-    fun provideCardKeysPersister(openHelper: FareBotOpenHelper): CardKeysPersister = DbCardKeysPersister(openHelper)
+    fun provideFareBotSupportOpenHelperFactory(): SupportSQLiteOpenHelper.Factory {
+        return FrameworkSQLiteOpenHelperFactory()
+    }
+
+    @Provides
+    fun provideFareBotSupportOpenHelper(
+        factory: SupportSQLiteOpenHelper.Factory,
+        config: SupportSQLiteOpenHelper.Configuration): SupportSQLiteOpenHelper {
+        return factory.create(config)
+    }
+
+    @Provides
+    fun provideCardPersister(helper: SupportSQLiteOpenHelper): CardPersister = DbCardPersister(helper)
+
+    @Provides
+    fun provideCardKeysPersister(helper: SupportSQLiteOpenHelper): CardKeysPersister = DbCardKeysPersister(helper)
 
     @Provides
     fun provideExportHelper(cardPersister: CardPersister, cardSerializer: CardSerializer, gson: Gson): ExportHelper =

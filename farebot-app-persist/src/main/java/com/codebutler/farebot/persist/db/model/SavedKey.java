@@ -2,13 +2,11 @@ package com.codebutler.farebot.persist.db.model;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-
 import com.codebutler.farebot.card.CardType;
 import com.codebutler.farebot.persist.db.Adapters;
 import com.google.auto.value.AutoValue;
 import com.squareup.sqldelight.RowMapper;
-import com.squareup.sqldelight.SqlDelightStatement;
-
+import com.squareup.sqldelight.SqlDelightQuery;
 import java.util.Date;
 
 @AutoValue
@@ -31,7 +29,7 @@ public abstract class SavedKey implements SavedKeyModel {
     public static final RowMapper<SavedKey> SELECT_ALL_MAPPER = FACTORY.select_allMapper();
 
     @NonNull
-    public static final SqlDelightStatement SELECT_ALL = FACTORY.select_all();
+    public static final SqlDelightQuery SELECT_ALL = FACTORY.select_all();
 
     @NonNull
     public static SavedKey create(

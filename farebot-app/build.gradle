@@ -57,6 +57,7 @@ dependencies {
     implementation libs.autoDisposeAndroid
     implementation libs.autoDisposeAndroidKotlin
     implementation libs.supportDesign
+    implementation libs.supportSqliteFramework
     implementation libs.supportV4
     implementation libs.supportV7CardView
     implementation libs.supportV7RecyclerView
